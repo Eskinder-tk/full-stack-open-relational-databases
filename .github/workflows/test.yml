@@ -34,6 +34,7 @@ jobs:
           node-version: '22'
           
       - name: Install dependencies
+        working-directory: ./BlogApp-backend
         run: npm ci
         
       - name: Start application
