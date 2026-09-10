@@ -31,13 +31,21 @@ blogRouter.get('/' , async (req, res) => {
 
 
 
-blogRouter.post('/', tokenExtractor, async (req, res) => {
+blogRouter.post('/', tokenExtractor, async (req, res, next) => {
   try {
-    const user = await User.findByPk(req.decodedToken.id)    
+    const user = await User.findByPk(req.decodedToken.id)
+    const year = req.body.year
+    const currentYear = new Date().getFullYear()
+    if (year < 1991){
+      res.status(400).json({error: 'Year can not be less then 1991.'})
+    }
+    if (year > currentYear) {
+      res.status(400).json({error: "You can't put futur years in the year field."})
+    }    
     const blog = await Blog.create({...req.body, userId: user.id})    
-    res.json(blog)
+    res.status(201).json(blog)
   } catch(error) {
-    return res.status(400).json({ error })
+      next(error)
   }
 })
 

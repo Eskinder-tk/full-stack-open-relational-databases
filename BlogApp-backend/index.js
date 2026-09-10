@@ -10,6 +10,8 @@ const userRouter = require('./routes/users')
 const loginRouter = require('./routes/login')
 const authorRouter = require('./routes/authors')
 const resetRouter = require('./routes/reset')
+const readingRouter = require('./routes/readingList')
+const logoutRouter = require('./routes/logout')
 
 app.use(express.json())
 
@@ -17,6 +19,8 @@ app.use('/api/blogs', blogRouter)
 app.use('/api/users', userRouter)
 app.use('/api/login', loginRouter)
 app.use('/api/authors', authorRouter)
+app.use('/api/readinglists', readingRouter)
+app.use('/api/logout', logoutRouter)
 console.log(process.env.TESTING);
 if (process.env.TESTING === 'true') {
   console.log('REGISTERING RESET ROUTE')

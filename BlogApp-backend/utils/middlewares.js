@@ -1,5 +1,7 @@
 const {SECRET} = require('../utils/config')
 const jwt = require('jsonwebtoken')
+const Session = require('../models/Session')
+const User = require('../models/User')
 
 const errorHandler = (error, request, response, next) => {
   if (error.name === 'SequelizeValidationError') {
@@ -15,19 +17,34 @@ const errorHandler = (error, request, response, next) => {
   })
 };
 
-const tokenExtractor = (req, res, next) => {
+const tokenExtractor = async (req, res, next) => {
   const authorization = req.get('authorization')
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     try {
+      const session = await Session.findOne({ where: { session: authorization.substring(7) } })
+
+      if (!session) {
+        return res.status(401).json({ error: 'Unauthorized.' })
+      }
+
+      const user = await User.findByPk(session.userId)
+      if (!user) {
+        return res.status(401).json({ error: 'Unauthorized.' })
+      }
+
+      if (user.disabled === true) {
+        return res.status(401).json({ error: 'Account blocked.' })
+      }
+
       req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
-    } catch(error) {
+      return next()
+    } catch (error) {
       console.log('JWT Error:', error.message)
       return res.status(401).json({ error: 'token invalid' })
     }
-  }  else {
-    return res.status(401).json({ error: 'token missing' })
   }
-  next()
+
+  return res.status(401).json({ error: 'token missing' })
 }
 
 module.exports = {errorHandler, tokenExtractor}

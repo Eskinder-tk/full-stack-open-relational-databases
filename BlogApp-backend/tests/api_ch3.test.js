@@ -22,7 +22,8 @@ describe('Blogs API', () => {
     const newBlog = {
       title: 'Test Blog Post',
       author: 'Test Author',
-      url: 'https://example.com/test-blog'
+      url: 'https://example.com/test-blog',
+      year: 2024
     }
 
     const response = await axios.post(`${baseUrl}/blogs`, newBlog, {

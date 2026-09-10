@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt')
 
 const { SECRET } = require('../utils/config')
 const User = require('../models/User')
+const Session = require('../models/Session')
 
 router.post('/', async (req, res) => {
   console.log('LOGIN ROUTE HIT')
@@ -37,6 +38,8 @@ router.post('/', async (req, res) => {
   }
 
   const token = jwt.sign(userForToken, SECRET)
+
+  await Session.create({session: token, userId: user.id})
 
   res
     .status(200)

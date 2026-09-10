@@ -21,12 +21,14 @@ before(async () => {
   const newBlog = {
     title: 'Test Blog for Reading List',
     author: 'Reading List Author',
-    url: 'https://example.com/reading-list-blog'
+    url: 'https://example.com/reading-list-blog',
+    year: 1998
   }
   
   const blogResponse = await axios.post(`${baseUrl}/blogs`, newBlog, {
     headers: { Authorization: `Bearer ${testData.tokens[0]}` }
   })
+  console.log(blogResponse.data.id);
   createdBlogId = blogResponse.data.id
 })
 
@@ -38,10 +40,11 @@ describe('Reading Lists API', () => {
     }
     
     const response = await axios.post(`${baseUrl}/readinglists`, readingListEntry)
+    console.log(response.data);
     
     assert.ok([200, 201].includes(response.status))
-    assert.strictEqual(response.data.blog_id, createdBlogId)
-    assert.strictEqual(response.data.user_id, testData.users[0].id)
+    assert.strictEqual(response.data.blogId, createdBlogId)
+    assert.strictEqual(response.data.userId, testData.users[0].id)
     assert.strictEqual(response.data.read, false)
   })
   
@@ -127,8 +130,8 @@ describe('Reading Lists API', () => {
     assert.ok(reading.title)
     assert.ok(reading.author)
     assert.ok(reading.url)
-    assert.ok(reading.reading_list)
-    assert.strictEqual(typeof reading.reading_list.read, 'boolean')
+    assert.ok(reading.readingList)
+    assert.strictEqual(typeof reading.readingList.read, 'boolean')
   })
   
   it('user can filter reading list by read status', async () => {
@@ -145,7 +148,7 @@ describe('Reading Lists API', () => {
   
   it('user can mark a blog as read with authentication', async () => {
     const userResponse = await axios.get(`${baseUrl}/users/${testData.users[0].id}`)
-    const readingListId = userResponse.data.readings[0].reading_list.id
+    const readingListId = userResponse.data.readings[0].readingList.id
     
     const response = await axios.put(
       `${baseUrl}/readinglists/${readingListId}`,
@@ -159,7 +162,7 @@ describe('Reading Lists API', () => {
   
   it('marking as read requires authentication', async () => {
     const userResponse = await axios.get(`${baseUrl}/users/${testData.users[0].id}`)
-    const readingListId = userResponse.data.readings[0].reading_list.id
+    const readingListId = userResponse.data.readings[0].readingList.id
     
     try {
       await axios.put(
@@ -174,7 +177,7 @@ describe('Reading Lists API', () => {
   
   it('user can only mark their own reading list entries', async () => {
     const userResponse = await axios.get(`${baseUrl}/users/${testData.users[0].id}`)
-    const readingListId = userResponse.data.readings[0].reading_list.id
+    const readingListId = userResponse.data.readings[0].readingList.id
     
     try {
       await axios.put(
@@ -232,7 +235,8 @@ describe('Session Management API', () => {
     const newBlog = {
       title: 'Blog with Session',
       author: 'Session Author',
-      url: 'https://example.com/session-blog'
+      url: 'https://example.com/session-blog',
+      year: 1998
     }
     
     const response = await axios.post(`${baseUrl}/blogs`, newBlog, {
@@ -255,7 +259,8 @@ describe('Session Management API', () => {
     const newBlog = {
       title: 'Blog After Logout',
       author: 'Logout Author',
-      url: 'https://example.com/logout-blog'
+      url: 'https://example.com/logout-blog',
+      year: 1998
     }
     
     try {
@@ -298,7 +303,8 @@ describe('Session Management API', () => {
     const newBlog1 = {
       title: 'Blog with First Token',
       author: 'Token1',
-      url: 'https://example.com/token1'
+      url: 'https://example.com/token1',
+      year: 1998
     }
     
     const response1 = await axios.post(`${baseUrl}/blogs`, newBlog1, {
@@ -309,7 +315,8 @@ describe('Session Management API', () => {
     const newBlog2 = {
       title: 'Blog with Second Token',
       author: 'Token2',
-      url: 'https://example.com/token2'
+      url: 'https://example.com/token2',
+      year: 1998
     }
     
     const response2 = await axios.post(`${baseUrl}/blogs`, newBlog2, {
@@ -330,7 +337,8 @@ describe('Session Management API', () => {
     const newBlog = {
       title: 'Blog After Mass Logout',
       author: 'Logout All',
-      url: 'https://example.com/logout-all'
+      url: 'https://example.com/logout-all',
+      year: 1998
     }
     
     try {
@@ -350,7 +358,8 @@ describe('Session Management API', () => {
     const newBlog = {
       title: 'Blog for Active User',
       author: 'Active',
-      url: 'https://example.com/active'
+      url: 'https://example.com/active',
+      year: 1998
     }
     
     const response = await axios.post(`${baseUrl}/blogs`, newBlog, {
@@ -372,7 +381,8 @@ describe('Integration: Reading Lists and Sessions', () => {
     const newBlog = {
       title: 'Integration Test Blog',
       author: 'Integration Author',
-      url: 'https://example.com/integration'
+      url: 'https://example.com/integration',
+      year: 1998
     }
     
     const blogResponse = await axios.post(`${baseUrl}/blogs`, newBlog, {
@@ -388,7 +398,7 @@ describe('Integration: Reading Lists and Sessions', () => {
     const response = await axios.post(`${baseUrl}/readinglists`, readingListEntry)
     
     assert.ok([200, 201].includes(response.status))
-    assert.strictEqual(response.data.blog_id, integrationBlogId)
+    assert.strictEqual(response.data.blogId, integrationBlogId)
     integrationReadingListId = response.data.id
   })
   
